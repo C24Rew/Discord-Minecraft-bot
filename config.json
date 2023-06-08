@@ -10,5 +10,6 @@
     "ip_port": 25565,
     "rcon_password": "your rcon password",
     "server_name": "name",
-    "admin_role" : "Admin"
+    "admin_role" : "Admin",
+    "wait_server" : 30
   }
