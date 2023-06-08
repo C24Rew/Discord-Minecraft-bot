@@ -20,18 +20,19 @@ def load_credentials():
 
 credentials = load_credentials()
 
-prefix = credentials['prefix']
-bot_token = credentials['token']
-ip_channel_id = credentials['channel_for_ip']
-chat_channel_id = credentials['channel_for_chat']
-log_channel_id = credentials['channel_for_log']
+prefix = credentials['prefix'] #prefix for commands
+bot_token = credentials['token'] #private token
+ip_channel_id = credentials['channel_for_ip'] #ip channel
+chat_channel_id = credentials['channel_for_chat'] #chat for minecraft-discord
+log_channel_id = credentials['channel_for_log'] #log channel
 log_path = credentials['path_to_latestlog'] #path to: logs/latest.log
 rcon_host = credentials['minecraft_ip'] #localhost
 rcon_port = credentials['rcon_port'] #25575
 ip_port = credentials['ip_port'] #25565
-rcon_password = credentials['rcon_password']
-server_name = credentials['server_name']
-admin = credentials['admin_role']
+rcon_password = credentials['rcon_password'] #rcon's password
+server_name = credentials['server_name'] #nombre del servidor
+admin = credentials['admin_role']# the role for executing the command "command"
+wait_server = credentials['wait_server']#i put 30 seconds, but maybe 20 will be enough
 
 filter = ['Thread RCON Client', '[Server thread/INFO]: RCON']# filter RCON lines
 max_players_to_show = 10 #max players to be showed in "players" command
@@ -126,7 +127,7 @@ async def on_ready():
     bot.loop.create_task(minecraft_to_discord())
     await purge_channel()
 
-    await bot.change_presence(activity=discord.Game(name="?help"))
+    await bot.change_presence(activity=discord.Game(name="{prefix}help"))
     
     ngrok_tunnel = ngrok.connect(ip_port, 'tcp')
 
@@ -146,9 +147,9 @@ async def on_ready():
 
     await canal.edit(topic=f'turning on the server -\nPublic IP: {nueva_ip}')
     
-    create_embed("turning on", nueva_ip, "0")
+    create_embed("turning on", nueva_ip, "-")
 
-    await asyncio.sleep(30)
+    await asyncio.sleep(wait_server)
     
     jugadores = await get_players(rcon_host, ip_port)
     if jugadores is not None:
@@ -159,7 +160,7 @@ async def on_ready():
     while True:
         jugadores = await get_players(rcon_host, ip_port)
         if jugadores is not None:
-            descripcion = f'Jugadores: {jugadores} -\nPublic IP: {nueva_ip}'
+            descripcion = f'Players: {jugadores} -\nPublic IP: {nueva_ip}'
             texto1 = "Online"
             texto2 = f"{nueva_ip}"
             texto3 = f"{jugadores}"
@@ -167,7 +168,7 @@ async def on_ready():
             descripcion = f'Server off -\nPublic IP: {nueva_ip}'
             texto1 = "Offline"
             texto2 = f"{nueva_ip}"
-            texto3 = "0"
+            texto3 = "-"
 
         await canal.edit(topic=descripcion)
 
@@ -273,7 +274,7 @@ async def help(ctx):
 
     commands_info = [
         {'name': 'ip', 'description': 'Shows the IP of the server.'},
-        {'name': 'players', 'description': 'Shows the list of players on the server'},
+        {'name': 'players', 'description': 'Shows the list of players on the server.'},
         {'name': 'command', 'description': 'Run a command in the server console (administrators only).'},
         {'name': 'help', 'description': 'Shows this message.'},
     ]
