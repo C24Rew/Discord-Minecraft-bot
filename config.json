@@ -1,0 +1,14 @@
+{
+    "token": "BOT TOKEN",
+    "prefix": "?",
+    "channel_for_ip": channel_id,
+    "channel_for_chat": channel_id,
+    "channel_for_log": channel_id,
+    "path_to_latestlog": "/logs/latest.log",
+    "minecraft_ip": "localhost",
+    "rcon_port": 25575,
+    "ip_port": 25565,
+    "rcon_password": "your rcon password",
+    "server_name": "name",
+    "admin_role" : "Admin"
+  }
