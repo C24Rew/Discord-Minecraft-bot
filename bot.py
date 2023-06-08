@@ -127,7 +127,7 @@ async def on_ready():
     bot.loop.create_task(minecraft_to_discord())
     await purge_channel()
 
-    await bot.change_presence(activity=discord.Game(name="{prefix}help"))
+    await bot.change_presence(activity=discord.Game(name=f'{prefix}ayuda'))
     
     ngrok_tunnel = ngrok.connect(ip_port, 'tcp')
 
