@@ -45,6 +45,40 @@ nueva_ip = None
 progress ={}
 current_time={}
 
+async def check_server_and_rcon_connection():
+    embed = Embed(title="Bot Status", color=discord.Color.red())
+
+    last_line = await get_last_line(log_path)
+    if last_line is not None:
+        embed.add_field(name="Last Log Line", value="Obtained last line from log file.")
+    else:
+        embed.add_field(name="Last Log Line", value="Failed to obtain last line from log file.")
+
+    try:
+        server = JavaServer(rcon_host, ip_port)
+        status = server.status()
+        embed.add_field(name="Server Connection", value="Connection established successfully.")
+    except Exception as e:
+        embed.add_field(name="Server Connection", value="Failed to establish connection.")
+        embed.add_field(name="Error", value=str(e))
+
+    try:
+        with mcrcon.MCRcon(rcon_host, rcon_password, rcon_port) as rcon:
+            embed.add_field(name="RCON Connection", value="Connection established successfully.")
+    except Exception as e:
+        embed.add_field(name="RCON Connection", value="Failed to establish connection.")
+        embed.add_field(name="Error", value=str(e))
+
+    return embed
+
+@bot.command()
+async def botstatus(ctx):
+    if not any(role.name == admin for role in ctx.author.roles):
+        await ctx.send(f"you don't have the necessary role.")
+        return
+    embed = await check_server_and_rcon_connection()
+    await ctx.send(embed=embed)
+
 def create_embed(texto1, texto2, texto3):
     global server_name
     embed = discord.Embed(title=server_name, color=discord.Color.blue())
@@ -275,8 +309,10 @@ async def help(ctx):
     commands_info = [
         {'name': 'ip', 'description': 'Shows the IP of the server.'},
         {'name': 'players', 'description': 'Shows the list of players on the server.'},
-        {'name': 'command', 'description': 'Run a command in the server console (administrators only).'},
+        {'name': 'command', 'description': 'Run a command in the server console (only for administrators).'},
+        {'name': 'botstatus', 'description': 'obtain information if the bot managed to establish a connection with the server (only for administrators).'},
         {'name': 'help', 'description': 'Shows this message.'},
+        {'name': 'metion', 'description': 'You can mention this bot to get information about the server.'},
     ]
 
     for cmd_info in commands_info:
@@ -290,7 +326,7 @@ async def help(ctx):
 async def command(ctx, *, command):
     global admin
     if not any(role.name == admin for role in ctx.author.roles):
-        await ctx.send(f"you don't have the necessary role")
+        await ctx.send(f"you don't have the necessary role.")
         return
     with mcrcon.MCRcon(rcon_host, rcon_password, port=rcon_port) as rcon:
         response = rcon.command(command)
