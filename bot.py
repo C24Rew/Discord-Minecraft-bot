@@ -7,6 +7,7 @@ from pyngrok import ngrok
 from mcstatus import JavaServer
 import time
 import json
+from discord import Embed
 
 intents = discord.Intents.all()
 intents.typing = True
